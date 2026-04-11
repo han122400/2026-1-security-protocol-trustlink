@@ -33,7 +33,7 @@ export async function GET(
 
   // 현재 사용자의 출석 여부
   const myAttendance = classData.attendances.find(
-    (a) => a.studentId === session.user!.id
+    (a: { studentId: string }) => a.studentId === session.user!.id
   );
 
   return NextResponse.json({
