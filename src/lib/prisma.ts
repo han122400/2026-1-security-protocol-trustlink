@@ -1,21 +1,12 @@
 import { PrismaClient } from '@prisma/client';
-import { PrismaNeon } from '@prisma/adapter-neon';
-import { Pool } from '@neondatabase/serverless';
 
 const globalForPrisma = global as unknown as { prisma: PrismaClient };
 
-// Vercel 환경과 로컬 환경 모두에서 작동하도록 설정
-const connectionString = process.env.DATABASE_URL!;
-
-// Prisma 어댑터에는 Pool 객체가 필요함. 
-// 타입 불일치 에러 방지를 위해 any 캐스팅 사용 (런타임 호환성 확인됨)
-const pool = new Pool({ connectionString });
-const adapter = new PrismaNeon(pool as any);
-
+// Vercel 환경에서 DB URL을 명시적으로 넣어 기본 Postgres 드라이버로 연결
 export const prisma =
   globalForPrisma.prisma ||
   new PrismaClient({
-    adapter,
+    datasourceUrl: process.env.DATABASE_URL,
     log: process.env.NODE_ENV === 'development' ? ['query', 'error', 'warn'] : ['error'],
   });
 
