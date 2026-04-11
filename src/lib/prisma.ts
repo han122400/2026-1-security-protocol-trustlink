@@ -2,7 +2,7 @@ import { PrismaClient } from '@prisma/client';
 
 const globalForPrisma = global as unknown as { prisma: PrismaClient };
 
-// Vercel 환경에서 DB URL을 명시적으로 넣어 기본 Postgres 드라이버로 연결
+// Vercel Serverless/Edge 런타임 호환을 위해 명시적으로 URL 전달 (Prisma 7 방식)
 export const prisma =
   globalForPrisma.prisma ||
   new PrismaClient({
