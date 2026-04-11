@@ -40,3 +40,6 @@ prisma/migrations/
 
 # Vercel
 .vercel
+
+.vercel
+.env*.local
