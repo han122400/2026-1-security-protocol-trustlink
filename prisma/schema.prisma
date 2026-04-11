@@ -1,0 +1,178 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+}
+
+// ===== NextAuth.js 관련 테이블 =====
+
+model Account {
+  id                String  @id @default(cuid())
+  userId            String
+  type              String
+  provider          String
+  providerAccountId String
+  refresh_token     String?
+  access_token      String?
+  expires_at        Int?
+  token_type        String?
+  scope             String?
+  id_token          String?
+  session_state     String?
+  user              User    @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@unique([provider, providerAccountId])
+}
+
+model Session {
+  id           String   @id @default(cuid())
+  sessionToken String   @unique
+  userId       String
+  expires      DateTime
+  user         User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+}
+
+model VerificationToken {
+  identifier String
+  token      String   @unique
+  expires    DateTime
+
+  @@unique([identifier, token])
+}
+
+// ===== 사용자 =====
+
+model User {
+  id             String    @id @default(cuid())
+  name           String?
+  email          String?   @unique
+  emailVerified  DateTime?
+  image          String?
+  role           String    @default("general") // "student" | "professor" | "general"
+  hasCertificate Boolean   @default(false)
+  createdAt      DateTime  @default(now())
+  updatedAt      DateTime  @updatedAt
+
+  accounts       Account[]
+  sessions       Session[]
+  certificates   Certificate[]
+  challenges     LoginChallenge[]
+  sentMessages   Message[]       @relation("sender")
+  conversations1 Conversation[]  @relation("participant1")
+  conversations2 Conversation[]  @relation("participant2")
+  classes        Class[]
+  attendances    Attendance[]
+  notifications  Notification[]
+}
+
+// ===== 인증서 =====
+
+model Certificate {
+  id              String    @id @default(cuid())
+  userId          String
+  serialNumber    String    @unique
+  subjectName     String
+  publicKey       String    // JWK 형태의 공개키
+  certificateData String    // 서버가 서명한 인증서 전체 (JSON)
+  issuedAt        DateTime  @default(now())
+  expiresAt       DateTime
+  status          String    @default("active") // "active" | "revoked" | "expired"
+  revokedAt       DateTime?
+
+  user        User         @relation(fields: [userId], references: [id], onDelete: Cascade)
+  messages    Message[]
+  attendances Attendance[]
+}
+
+// ===== 전자서명 로그인 Challenge =====
+
+model LoginChallenge {
+  id        String   @id @default(cuid())
+  userId    String
+  challenge String
+  createdAt DateTime @default(now())
+  expiresAt DateTime
+  used      Boolean  @default(false)
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+}
+
+// ===== 대화 / 메시지 =====
+
+model Conversation {
+  id             String    @id @default(cuid())
+  participant1Id String
+  participant2Id String
+  lastMessageAt  DateTime?
+  createdAt      DateTime  @default(now())
+
+  participant1 User      @relation("participant1", fields: [participant1Id], references: [id])
+  participant2 User      @relation("participant2", fields: [participant2Id], references: [id])
+  messages     Message[]
+
+  @@unique([participant1Id, participant2Id])
+}
+
+model Message {
+  id               String   @id @default(cuid())
+  conversationId   String
+  senderId         String
+  encryptedContent String   // AES-GCM 암호문 (Base64)
+  encryptedAesKey  String   // RSA-OAEP 암호화된 AES키 (Base64)
+  iv               String   // AES-GCM IV (Base64)
+  signature        String   // RSASSA-PKCS1-v1_5 서명 (Base64)
+  senderCertId     String
+  createdAt        DateTime @default(now())
+
+  conversation Conversation @relation(fields: [conversationId], references: [id], onDelete: Cascade)
+  sender       User         @relation("sender", fields: [senderId], references: [id])
+  senderCert   Certificate  @relation(fields: [senderCertId], references: [id])
+}
+
+// ===== 출석 =====
+
+model Class {
+  id          String   @id @default(cuid())
+  professorId String
+  className   String
+  startsAt    DateTime
+  endsAt      DateTime
+  challenge   String
+  createdAt   DateTime @default(now())
+
+  professor   User         @relation(fields: [professorId], references: [id])
+  attendances Attendance[]
+}
+
+model Attendance {
+  id         String   @id @default(cuid())
+  classId    String
+  studentId  String
+  signature  String
+  certId     String
+  verified   Boolean
+  attendedAt DateTime @default(now())
+
+  class   Class       @relation(fields: [classId], references: [id], onDelete: Cascade)
+  student User        @relation(fields: [studentId], references: [id])
+  cert    Certificate @relation(fields: [certId], references: [id])
+
+  @@unique([classId, studentId])
+}
+
+// ===== 알림 =====
+
+model Notification {
+  id        String   @id @default(cuid())
+  userId    String
+  type      String   // "message" | "attendance" | "certificate"
+  title     String
+  content   String
+  link      String?
+  isRead    Boolean  @default(false)
+  createdAt DateTime @default(now())
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+}
