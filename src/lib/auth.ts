@@ -11,6 +11,9 @@ export const { handlers, auth, signIn, signOut } = NextAuth({
     Google({
       clientId: process.env.GOOGLE_CLIENT_ID!,
       clientSecret: process.env.GOOGLE_CLIENT_SECRET!,
+      // Vercel 서버리스 환경에서 PKCE 쿠키가 손실되는 문제를 방지
+      // state만 사용하고 pkce는 비활성화
+      checks: ['state'],
     }),
   ],
   session: {
@@ -37,3 +40,4 @@ export const { handlers, auth, signIn, signOut } = NextAuth({
     signIn: '/',
   },
 });
+
