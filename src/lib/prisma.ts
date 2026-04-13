@@ -10,6 +10,7 @@ function createPrismaClient() {
     'postgresql://neondb_owner:npg_jCm0XnANlPu2@ep-cool-sun-an94lelo-pooler.c-6.us-east-1.aws.neon.tech/neondb?channel_binding=require&sslmode=require';
 
   const pool = new Pool({ connectionString });
+  // @ts-expect-error - Prisma Neon adapter type mismatch with @neondatabase/serverless
   const adapter = new PrismaNeon(pool);
 
   return new PrismaClient({
