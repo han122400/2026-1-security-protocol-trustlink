@@ -10,6 +10,7 @@ import {
   AlertCircle,
   Trash2,
   RefreshCw,
+  Lock,
 } from "lucide-react";
 import {
   generateSignKeyPair,
@@ -349,8 +350,8 @@ export default function CertificatePage() {
             {/* 단계별 진행 UI */}
             {issuing && (
               <div className="card">
-                <h3 style={{ fontSize: "1rem", fontWeight: 700, marginBottom: "16px" }}>
-                  🔐 인증서 발급 진행 중
+                <h3 style={{ fontSize: "1rem", fontWeight: 700, marginBottom: "16px", display: "flex", alignItems: "center", gap: "6px" }}>
+                  <Lock size={18} /> 인증서 발급 진행 중
                 </h3>
                 <div className="step-progress">
                   {steps.map((step, i) => (

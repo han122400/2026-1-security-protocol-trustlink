@@ -19,10 +19,14 @@ export default function AttendanceCreatePage() {
 
     setCreating(true);
     try {
+      // 'YYYY-MM-DDTHH:mm' 문자열을 로컬 타임존을 반영한 Date 객체로 변환 후 전송
+      const isoStartsAt = new Date(startsAt).toISOString();
+      const isoEndsAt = new Date(endsAt).toISOString();
+
       const res = await fetch("/api/attendance/classes", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ className, startsAt, endsAt }),
+        body: JSON.stringify({ className, startsAt: isoStartsAt, endsAt: isoEndsAt }),
       });
 
       if (res.ok) {

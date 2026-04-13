@@ -354,8 +354,8 @@ export default function ChatRoomPage({ params }: { params: Promise<{ id: string 
               background: "var(--bg-secondary)",
             }}
           >
-            <div style={{ fontSize: "0.82rem", fontWeight: 700, marginBottom: "8px", color: "var(--accent-primary)" }}>
-              🔐 전자봉투 메시지 전송 중
+            <div style={{ fontSize: "0.82rem", fontWeight: 700, marginBottom: "8px", color: "var(--accent-primary)", display: "flex", alignItems: "center", gap: "6px" }}>
+              <Lock size={16} /> 전자봉투 메시지 전송 중
             </div>
             <div style={{ display: "flex", gap: "8px", flexWrap: "wrap" }}>
               {envelopeSteps.map((step, i) => (

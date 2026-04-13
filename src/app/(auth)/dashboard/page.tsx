@@ -10,6 +10,9 @@ import {
   AlertCircle,
   ArrowRight,
   CheckCircle2,
+  Presentation,
+  GraduationCap,
+  User as UserIcon,
 } from "lucide-react";
 
 export default function DashboardPage() {
@@ -57,7 +60,7 @@ export default function DashboardPage() {
                 style={{ justifyContent: "flex-start", padding: "16px" }}
                 onClick={() => selectRole("professor")}
               >
-                <span style={{ fontSize: "1.5rem" }}>👨‍🏫</span>
+                <Presentation size={24} style={{ color: "var(--accent-primary)", marginRight: "12px" }} />
                 <div style={{ textAlign: "left" }}>
                   <div style={{ fontWeight: 600 }}>교수</div>
                   <div className="text-xs text-muted">
@@ -70,7 +73,7 @@ export default function DashboardPage() {
                 style={{ justifyContent: "flex-start", padding: "16px" }}
                 onClick={() => selectRole("student")}
               >
-                <span style={{ fontSize: "1.5rem" }}>🎓</span>
+                <GraduationCap size={24} style={{ color: "var(--accent-primary)", marginRight: "12px" }} />
                 <div style={{ textAlign: "left" }}>
                   <div style={{ fontWeight: 600 }}>학생</div>
                   <div className="text-xs text-muted">
@@ -83,7 +86,7 @@ export default function DashboardPage() {
                 style={{ justifyContent: "flex-start", padding: "16px" }}
                 onClick={() => selectRole("general")}
               >
-                <span style={{ fontSize: "1.5rem" }}>👤</span>
+                <UserIcon size={24} style={{ color: "var(--accent-primary)", marginRight: "12px" }} />
                 <div style={{ textAlign: "left" }}>
                   <div style={{ fontWeight: 600 }}>일반 사용자</div>
                   <div className="text-xs text-muted">보안 메시지 송수신</div>

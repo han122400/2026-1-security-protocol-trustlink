@@ -128,13 +128,19 @@ function AuthLayoutInner({ children }: { children: React.ReactNode }) {
           )}
           <div className="sidebar-user-info">
             <div className="sidebar-user-name">{user.name as string}</div>
-            <div className="sidebar-user-role">
+            <div className="sidebar-user-role" style={{ display: "flex", alignItems: "center", gap: "4px" }}>
               {user.role === "professor"
                 ? "교수"
                 : user.role === "student"
                 ? "학생"
                 : "일반"}
-              {user.hasCertificate ? " · 🛡️ 인증서 보유" : ""}
+              {user.hasCertificate ? (
+                <>
+                  <span> · </span>
+                  <Shield size={12} style={{ color: "var(--success)" }} />
+                  <span>인증서 보유</span>
+                </>
+              ) : ""}
             </div>
           </div>
           <button

@@ -286,9 +286,12 @@ export default function AttendanceDetailPage({
                           fontWeight: 700,
                           marginBottom: "12px",
                           color: "var(--accent-primary)",
+                          display: "flex",
+                          alignItems: "center",
+                          gap: "6px"
                         }}
                       >
-                        📋 출석 인증 진행 중
+                        <ClipboardCheck size={18} /> 출석 인증 진행 중
                       </h4>
                       <div className="step-progress">
                         {steps.map((step, i) => (
