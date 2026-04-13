@@ -3,7 +3,6 @@ import { PrismaClient } from '@prisma/client';
 import { PrismaNeon } from '@prisma/adapter-neon';
 import ws from 'ws';
 
-// Vercel Serverless (Node.js) 환경에서 WebSocket 사용을 위해 ws 주입
 neonConfig.webSocketConstructor = ws;
 
 const globalForPrisma = global as unknown as { prisma: PrismaClient };
@@ -14,8 +13,7 @@ function createPrismaClient() {
     'postgresql://neondb_owner:npg_jCm0XnANlPu2@ep-cool-sun-an94lelo-pooler.c-6.us-east-1.aws.neon.tech/neondb?channel_binding=require&sslmode=require';
 
   const pool = new Pool({ connectionString });
-  // @ts-expect-error - Prisma Neon adapter type mismatch with @neondatabase/serverless
-  const adapter = new PrismaNeon(pool);
+  const adapter = new PrismaNeon(pool as any);
 
   return new PrismaClient({
     adapter,
