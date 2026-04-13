@@ -1,6 +1,10 @@
-import { Pool } from '@neondatabase/serverless';
+import { Pool, neonConfig } from '@neondatabase/serverless';
 import { PrismaClient } from '@prisma/client';
 import { PrismaNeon } from '@prisma/adapter-neon';
+import ws from 'ws';
+
+// Vercel Serverless (Node.js) 환경에서 WebSocket 사용을 위해 ws 주입
+neonConfig.webSocketConstructor = ws;
 
 const globalForPrisma = global as unknown as { prisma: PrismaClient };
 
