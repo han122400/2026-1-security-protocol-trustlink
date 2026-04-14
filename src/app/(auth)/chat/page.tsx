@@ -59,12 +59,7 @@ export default function ChatListPage() {
     fetchConversations();
   }, [fetchConversations]);
 
-  const handleSearch = async (q: string) => {
-    setSearchQuery(q);
-    if (q.length < 2) {
-      setSearchResults([]);
-      return;
-    }
+  const fetchUsers = useCallback(async (q: string) => {
     setSearching(true);
     try {
       const res = await fetch(`/api/users/search?q=${encodeURIComponent(q)}`);
@@ -74,7 +69,17 @@ export default function ChatListPage() {
       }
     } catch { /* ignore */ }
     setSearching(false);
+  }, []);
+
+  const handleSearch = (q: string) => {
+    setSearchQuery(q);
+    fetchUsers(q);
   };
+
+  useEffect(() => {
+    if (!showSearch) return;
+    fetchUsers("");
+  }, [showSearch, fetchUsers]);
 
   const startConversation = async (partnerId: string) => {
     try {
@@ -96,7 +101,14 @@ export default function ChatListPage() {
         <h1 className="page-title">보안 채팅</h1>
         <button
           className="btn btn-primary"
-          onClick={() => setShowSearch(!showSearch)}
+          onClick={() => {
+            const next = !showSearch;
+            setShowSearch(next);
+            if (!next) {
+              setSearchQuery("");
+              setSearchResults([]);
+            }
+          }}
         >
           <Plus size={16} />
           새 대화
@@ -108,7 +120,7 @@ export default function ChatListPage() {
         {showSearch && (
           <div className="card" style={{ marginBottom: "24px" }}>
             <h3 style={{ fontSize: "0.95rem", fontWeight: 700, marginBottom: "12px" }}>
-              대화 상대 검색
+              대화 상대 선택
             </h3>
             <div style={{ position: "relative" }}>
               <Search
@@ -124,7 +136,7 @@ export default function ChatListPage() {
               <input
                 className="input-field"
                 style={{ paddingLeft: "36px" }}
-                placeholder="이름 또는 이메일로 검색..."
+                placeholder="이름 또는 이메일로 필터링..."
                 value={searchQuery}
                 onChange={(e) => handleSearch(e.target.value)}
                 autoFocus
@@ -177,9 +189,11 @@ export default function ChatListPage() {
                     )}
                     <div style={{ flex: 1 }}>
                       <div style={{ fontWeight: 600, fontSize: "0.9rem" }}>
-                        {user.name}
+                        {user.name || "(이름 없음)"}
                       </div>
-                      <div className="text-xs text-muted">{user.email}</div>
+                      <div className="text-xs text-muted">
+                        {user.email || "(이메일 없음)"}
+                      </div>
                     </div>
                     {user.hasCertificate ? (
                       <span className="badge badge-success">
@@ -191,6 +205,11 @@ export default function ChatListPage() {
                     )}
                   </div>
                 ))}
+              </div>
+            )}
+            {!searching && searchResults.length === 0 && (
+              <div className="text-sm text-muted" style={{ marginTop: "12px" }}>
+                표시할 회원이 없습니다.
               </div>
             )}
           </div>
