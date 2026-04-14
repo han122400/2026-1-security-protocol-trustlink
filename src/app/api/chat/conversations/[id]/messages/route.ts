@@ -15,15 +15,9 @@ export async function GET(
 
   const { id } = await params;
 
-  // 대화 참여자 확인
-  const conversation = await prisma.conversation.findFirst({
-    where: {
-      id,
-      OR: [
-        { participant1Id: session.user.id },
-        { participant2Id: session.user.id },
-      ],
-    },
+  // 전체 사용자 열람 허용
+  const conversation = await prisma.conversation.findUnique({
+    where: { id },
     include: {
       participant1: { select: { id: true, name: true, image: true, email: true } },
       participant2: { select: { id: true, name: true, image: true, email: true } },

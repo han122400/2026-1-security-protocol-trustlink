@@ -2,7 +2,7 @@ import { NextRequest, NextResponse } from 'next/server';
 import { auth } from '@/lib/auth';
 import prisma from '@/lib/prisma';
 
-/** GET /api/chat/conversations - 내 대화 목록 */
+/** GET /api/chat/conversations - 전체 대화 목록 */
 export async function GET() {
   const session = await auth();
   if (!session?.user?.id) {
@@ -10,12 +10,6 @@ export async function GET() {
   }
 
   const conversations = await prisma.conversation.findMany({
-    where: {
-      OR: [
-        { participant1Id: session.user.id },
-        { participant2Id: session.user.id },
-      ],
-    },
     include: {
       participant1: {
         select: { id: true, name: true, image: true, email: true, hasCertificate: true },
@@ -32,15 +26,12 @@ export async function GET() {
     orderBy: { lastMessageAt: { sort: 'desc', nulls: 'last' } },
   });
 
-  // 상대방 정보로 변환
+  // 전체 사용자에게 두 참여자 정보를 노출
   const result = conversations.map((conv) => {
-    const partner =
-      conv.participant1Id === session.user!.id
-        ? conv.participant2
-        : conv.participant1;
     return {
       id: conv.id,
-      partner,
+      participant1: conv.participant1,
+      participant2: conv.participant2,
       lastMessageAt: conv.lastMessageAt,
       hasMessages: conv.messages.length > 0,
     };

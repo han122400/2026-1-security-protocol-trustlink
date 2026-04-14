@@ -22,7 +22,8 @@ interface Partner {
 
 interface Conversation {
   id: string;
-  partner: Partner;
+  participant1: Partner;
+  participant2: Partner;
   lastMessageAt: string | null;
   hasMessages: boolean;
 }
@@ -240,9 +241,9 @@ export default function ChatListPage() {
                     cursor: "pointer",
                   }}
                 >
-                  {conv.partner.image ? (
+                  {conv.participant1.image ? (
                     <img
-                      src={conv.partner.image}
+                      src={conv.participant1.image}
                       alt=""
                       style={{ width: 44, height: 44, borderRadius: "50%", objectFit: "cover" }}
                       referrerPolicy="no-referrer"
@@ -261,19 +262,23 @@ export default function ChatListPage() {
                         color: "#0A0E1A",
                       }}
                     >
-                      {conv.partner.name?.charAt(0) || "?"}
+                      {conv.participant1.name?.charAt(0) || "?"}
                     </div>
                   )}
                   <div style={{ flex: 1 }}>
-                    <div style={{ fontWeight: 600 }}>{conv.partner.name}</div>
+                    <div style={{ fontWeight: 600 }}>
+                      {(conv.participant1.name || conv.participant1.email || "(이름 없음)")}
+                      {" - "}
+                      {(conv.participant2.name || conv.participant2.email || "(이름 없음)")}
+                    </div>
                     <div className="text-xs text-muted">
-                      {conv.partner.hasCertificate ? (
+                      {conv.participant1.hasCertificate && conv.participant2.hasCertificate ? (
                         <span style={{ display: "inline-flex", alignItems: "center", gap: "4px" }}>
                           <CheckCircle2 size={10} style={{ color: "var(--success)" }} />
-                          인증서 보유 · 보안 메시지 가능
+                          양측 인증서 보유
                         </span>
                       ) : (
-                        "인증서 미보유"
+                        "한쪽 이상 인증서 미보유"
                       )}
                     </div>
                   </div>
